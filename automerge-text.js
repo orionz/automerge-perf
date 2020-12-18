@@ -1,27 +1,30 @@
 // Apply the paper editing trace to an Automerge.Text object, one char at a time
 const { edits, finalText } = require('./editing-trace')
-//const AUTOMERGE_PACKAGE_LOCATION = process.env["AUTOMERGE_PACKAGE_LOCATION"]
-const AUTOMERGE_PACKAGE_LOCATION = "/home/alex/Projects/open-source/automerge/src/automerge"
-const Automerge = require(AUTOMERGE_PACKAGE_LOCATION)
-if (process.argv[2] === "wasm"){
-    const WASM_PATH = "/home/alex/Projects/automerge-stuff/automerge-rs/automerge-backend-wasm"
-    //const WASM_PATH = process.env.WASM_BACKEND_PATH
-    if (!WASM_PATH) throw "Undefined WASM_BACKEND_PATH"
-    const Backend = require(WASM_PATH)
-    Automerge.setDefaultBackend(Backend)
+
+const Automerge1 = require("automerge1")
+const AutomergeWASM = require("automerge-wasm")
+
+const MAX = edits.length
+
+benchmark(Automerge1, 'js', 2000, MAX)
+benchmark(AutomergeWASM, 'wasm', 2000, MAX)
+benchmark(Automerge1, 'js', 100, MAX)
+benchmark(AutomergeWASM, 'wasm', 100, MAX)
+
+function benchmark(automerge, mode, step, max) {
+  let state = automerge.from({text: new automerge.Text()})
+  const start = new Date()
+  for (let i = 0; i < max; i += step) {
+    //if (i % 1000 === 0) console.log(`Processed ${i} edits in ${new Date() - start} ms`)
+    state = automerge.change(state, doc => {
+      for (let j = i; j < Math.min(max, i + step); j++) {
+        if (edits[j][1] > 0) doc.text.deleteAt(edits[j][0], edits[j][1])
+        if (edits[j].length > 2) doc.text.insertAt(edits[j][0], ...edits[j].slice(2))
+      }
+    })
+  }
+  const time = new Date() - start;
+  console.log(`mode=${mode.padEnd(4)} step=${step.toString().padEnd(4)} time=${(time + 'ms').padEnd(8)}`)
 }
 
-const start = new Date()
-let state = Automerge.from({text: new Automerge.Text()})
 
-for (let i = 0; i < edits.length; i++) {
-  if (i % 1000 === 0) console.log(`Processed ${i} edits in ${new Date() - start} ms`)
-  state = Automerge.change(state, doc => {
-    if (edits[i][1] > 0) doc.text.deleteAt(edits[i][0], edits[i][1])
-    if (edits[i].length > 2) doc.text.insertAt(edits[i][0], ...edits[i].slice(2))
-  })
-}
-
-if (state.text.join('') !== finalText) {
-  throw new RangeError('ERROR: final text did not match expectation')
-}
