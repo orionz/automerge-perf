@@ -1,5 +1,5 @@
 // Apply the paper editing trace to an Automerge.Text object, one char at a time
-const { edits, finalText } = require('./editing-trace')
+const { edits, finalText: expected } = require('./editing-trace')
 
 const Automerge1 = require("automerge1")
 const AutomergeWASM = require("automerge-wasm")
@@ -24,6 +24,10 @@ function benchmark(automerge, mode, step, max) {
     })
   }
   const time = new Date() - start;
+  const result = state.text.elems.map(e => e.value).join('')
+  if (expected !== result) {
+    throw new RangeError(`ERROR: final text(len=${result.length}) did not match expectation (text=${expected.length})`)
+  }
   console.log(`mode=${mode.padEnd(4)} step=${step.toString().padEnd(4)} time=${(time + 'ms').padEnd(8)}`)
 }
 

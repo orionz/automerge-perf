@@ -1,6 +1,7 @@
 {
   "scripts": {
       "benchmark": "node automerge-text.js",
+      "benchmark:rust": "cd ./rust-bench && cargo build --release && ./target/release/rust-bench",
       "profile": "0x --output-dir wasm-flamegraph ./automerge-text.js"
   },
   "dependencies": {
