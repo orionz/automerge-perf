@@ -84,9 +84,10 @@ fn benchmark(edits: &[Edit], step: usize, expected: &str) {
 }
 
 fn main() {
-    //let f = File::open("../editing-trace.json").unwrap();
-    let f = File::open("../editing-trace-small.json").unwrap();
+    let f = File::open("../editing-trace.json").unwrap();
+    //let f = File::open("../editing-trace-small.json").unwrap();
     let edits: EditTrace = serde_json::from_reader(f).unwrap();
     benchmark(&edits.edits, 2000, &edits.final_text);
     benchmark(&edits.edits, 100, &edits.final_text);
+    benchmark(&edits.edits, 1, &edits.final_text);
 }

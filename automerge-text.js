@@ -10,6 +10,8 @@ benchmark(Automerge1, 'js', 2000, MAX)
 benchmark(AutomergeWASM, 'wasm', 2000, MAX)
 benchmark(Automerge1, 'js', 100, MAX)
 benchmark(AutomergeWASM, 'wasm', 100, MAX)
+benchmark(Automerge1, 'js', 1, MAX)
+benchmark(AutomergeWASM, 'wasm', 1, MAX)
 
 function benchmark(automerge, mode, step, max) {
   let state = automerge.from({text: new automerge.Text()})

@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "0x": "^4.9.1",
-    "automerge1": "orionz/automerge#change2",
+    "automerge1": "orionz/automerge#dist",
     "automerge-wasm": "orionz/automerge#wasm-node"
   }
 }
